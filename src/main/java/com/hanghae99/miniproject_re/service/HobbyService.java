@@ -6,8 +6,10 @@ import com.hanghae99.miniproject_re.model.Hobby;
 import com.hanghae99.miniproject_re.repository.HobbyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -16,9 +18,13 @@ public class HobbyService {
     @Autowired // 의존성 주입 > 없으면 NPE 발생
     private HobbyRepository hobbyRepository;
 
+    @Autowired
+    private S3Uploader s3Uploader;
+
     // 게시글 작성
-    public StatusResponseDto postHobby(HobbyRequestDto hobbyRequestDto){
-        Hobby hobby = new Hobby(hobbyRequestDto);
+    public StatusResponseDto postHobby(MultipartFile multipartFile, String title, String nickname, String content) throws IOException {
+        String imageUrl = s3Uploader.upload(multipartFile,"static");
+        Hobby hobby = new Hobby(imageUrl,title, nickname, content);
         hobbyRepository.save(hobby);
         // 헤더 값과 데이터를 함께 보내는 dto 생성
         StatusResponseDto statusResponseDto = new StatusResponseDto(hobby);

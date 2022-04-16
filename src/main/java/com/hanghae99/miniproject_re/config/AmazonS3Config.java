@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+// config 디렉토리에서 설정 값을 넣기 위해서 생성한 클래스
+// aws.yml 파일에 작성한 값들을 읽어와서 AmazonS3Client 객체를 만들어 Bean으로 주입하는 것
 @Configuration
 public class AmazonS3Config {
 

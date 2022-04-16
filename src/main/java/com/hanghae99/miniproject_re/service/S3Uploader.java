@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
+// 이미지 파일 업로드하는 로직
+// 내 로컬에 저장 > S3 저장 > 파일 변환 후 url로 받아오기 > 로컬에 있던 파일 삭제 > url S3에 저장
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -25,14 +27,16 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
 
+    // 2- 받은 파일 변환 후 S3에 전달
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+        System.out.println(dirName);
+        System.out.println(multipartFile);
         File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
-
         return upload(uploadFile, dirName);
     }
 
-    // S3로 파일 업로드하기
+    // 3- S3로 파일 업로드하기 ( 로컬에 저장된 파일을 url로 변환 )
     private String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
@@ -40,13 +44,13 @@ public class S3Uploader {
         return uploadImageUrl;
     }
 
-    // S3로 업로드
+    // 4 - S3에 변환한 파일 저장하기
     private String putS3(File uploadFile, String fileName) {
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
-    // 로컬에 저장된 이미지 지우기
+    // 5 - 로컬에 저장된 이미지 지우기
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
             log.info("File delete success");
@@ -55,7 +59,7 @@ public class S3Uploader {
         log.info("File delete fail");
     }
 
-    // 로컬에 파일 업로드 하기
+    // 1 - 로컬에 파일 변환 후 디렉토리에 업로드 하기
     private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
         if (convertFile.createNewFile()) { // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)

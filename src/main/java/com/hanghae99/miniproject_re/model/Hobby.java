@@ -21,12 +21,17 @@ public class Hobby extends Timestamped {
     private String nickname;
 
     @Column(nullable = false)
+    private String imageUrl;
+
+    @Column(nullable = false)
     private String content;
 
-    public Hobby(HobbyRequestDto hobbyRequestDto) {
-        this.title = hobbyRequestDto.getTitle();
-        this.nickname = hobbyRequestDto.getNickname();
-        this.content = hobbyRequestDto.getContent();
+
+    public Hobby(String imageUrl, String title, String nickname, String content) {
+        this.imageUrl = imageUrl;
+        this.title = title;
+        this.nickname = nickname;
+        this.content = content;
     }
 
     public void update(HobbyRequestDto hobbyRequestDto){

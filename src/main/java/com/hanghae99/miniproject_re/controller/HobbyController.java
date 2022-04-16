@@ -6,9 +6,10 @@ import com.hanghae99.miniproject_re.model.Hobby;
 import com.hanghae99.miniproject_re.service.HobbyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,8 +21,11 @@ public class HobbyController {
     private HobbyService hobbyService;
 
     @PostMapping("/hobby")
-    public StatusResponseDto createHobby (@RequestBody HobbyRequestDto hobbyRequestDto) {
-        return hobbyService.postHobby(hobbyRequestDto);
+    public StatusResponseDto createHobby ( @RequestParam("multipartFile") MultipartFile multipartFile, // multipartfile 불러올 땐, form data 라는 그룹안에 데이터가 다 담겨져온다.
+                                           @RequestParam String title,
+                                           @RequestParam String nickname,
+                                           @RequestParam String content) throws IOException {
+        return hobbyService.postHobby(multipartFile, title, nickname, content);
     }
 
     @GetMapping("/hobbies")

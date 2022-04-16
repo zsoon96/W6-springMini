@@ -18,12 +18,13 @@ public class MiniProjectReApplication {
             + "classpath:aws.yml";
 
     // 배포 시, 시간 설정 (디폴트 시간 = 배포 국가 기준)
-    @PostConstruct // Bean이 완전히 초기화 된 후, 단 한번만 호출되느 메소드
+    @PostConstruct // Bean이 완전히 초기화 된 후, 단 한번만 호출되는 메소드
     public void started() {
         TimeZone.setDefault((TimeZone.getTimeZone("Asia/Seoul")));
     }
 
     // S3
+    // application.yml과 aws.yml 두개의 파일 모두를 설정 파일로 읽어서 사용
     public static void main(String[] args) {
         new SpringApplicationBuilder(MiniProjectReApplication.class)
                 .properties(APPLICATION_LOCATIONS)
