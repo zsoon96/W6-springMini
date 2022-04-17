@@ -1,6 +1,5 @@
 package com.hanghae99.miniproject_re.controller;
 
-import com.hanghae99.miniproject_re.dto.HobbyRequestDto;
 import com.hanghae99.miniproject_re.dto.StatusResponseDto;
 import com.hanghae99.miniproject_re.model.Hobby;
 import com.hanghae99.miniproject_re.service.HobbyService;
@@ -22,9 +21,9 @@ public class HobbyController {
 
     @PostMapping("/hobby")
     public StatusResponseDto createHobby ( @RequestParam("multipartFile") MultipartFile multipartFile, // multipartfile 불러올 땐, form data 라는 그룹안에 데이터가 다 담겨져온다.
-                                           @RequestParam String title,
-                                           @RequestParam String nickname,
-                                           @RequestParam String content) throws IOException {
+                                           @RequestParam ("title") String title,
+                                           @RequestParam ("nickname") String nickname,
+                                           @RequestParam ("content") String content) throws IOException {
         return hobbyService.postHobby(multipartFile, title, nickname, content);
     }
 
@@ -39,8 +38,12 @@ public class HobbyController {
     }
 
     @PutMapping("/hobby/{hobbyId}")
-    public StatusResponseDto updateHobby(@PathVariable Integer hobbyId, @RequestBody HobbyRequestDto hobbyRequestDto) {
-        return hobbyService.putHobby(hobbyId, hobbyRequestDto);
+    public StatusResponseDto updateHobby(@PathVariable Integer hobbyId,
+                                         @RequestParam("multipartFile") MultipartFile multipartFile,
+                                         @RequestParam ("title") String title,
+                                         @RequestParam ("nickname") String nickname,
+                                         @RequestParam ("content") String content) {
+        return hobbyService.putHobby(hobbyId, multipartFile, title, nickname, content);
     }
 
     @DeleteMapping("/hobby/{hobbyId}")

@@ -1,6 +1,5 @@
 package com.hanghae99.miniproject_re.model;
 
-import com.hanghae99.miniproject_re.dto.HobbyRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,9 +33,11 @@ public class Hobby extends Timestamped {
         this.content = content;
     }
 
-    public void update(HobbyRequestDto hobbyRequestDto){
-        this.title = hobbyRequestDto.getTitle();
-        this.nickname = hobbyRequestDto.getNickname();
-        this.content = hobbyRequestDto.getContent();
+
+    public void update(Hobby hobby){
+        this.imageUrl = hobby.getImageUrl();
+        this.title = hobby.getTitle();
+        this.nickname = hobby.getNickname();
+        this.content = hobby.getContent();
     }
 }

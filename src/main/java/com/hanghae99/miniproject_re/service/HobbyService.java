@@ -1,6 +1,5 @@
 package com.hanghae99.miniproject_re.service;
 
-import com.hanghae99.miniproject_re.dto.HobbyRequestDto;
 import com.hanghae99.miniproject_re.dto.StatusResponseDto;
 import com.hanghae99.miniproject_re.model.Hobby;
 import com.hanghae99.miniproject_re.repository.HobbyRepository;
@@ -19,11 +18,12 @@ public class HobbyService {
     private HobbyRepository hobbyRepository;
 
     @Autowired
-    private S3Uploader s3Uploader;
+    private S3Service s3Service;
+//    private S3Uploader s3Uploader;
 
     // 게시글 작성
     public StatusResponseDto postHobby(MultipartFile multipartFile, String title, String nickname, String content) throws IOException {
-        String imageUrl = s3Uploader.upload(multipartFile,"static");
+        String imageUrl = s3Service.upload(multipartFile);
         Hobby hobby = new Hobby(imageUrl,title, nickname, content);
         hobbyRepository.save(hobby);
         // 헤더 값과 데이터를 함께 보내는 dto 생성
@@ -46,12 +46,15 @@ public class HobbyService {
 
     // 게시글 수정
     @Transactional // DB에 반영해주는 아이?
-    public StatusResponseDto putHobby(Integer hobbyId, HobbyRequestDto hobbyRequestDto){
+    public StatusResponseDto putHobby(Integer hobbyId,MultipartFile multipartFile, String title, String nickname, String content){
         // 요청받은 hobbyId 값으로 게시글 객체 찾기
         Hobby hobby = hobbyRepository.findById(hobbyId).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 없습니다."));
+
+        String imageUrl = s3Service.upload(multipartFile,"/");
+        Hobby response = new Hobby(imageUrl,title,nickname,content);
         // 게시글에 대한 수정내용 업데이트 해주기
-        hobby.update(hobbyRequestDto);
+        hobby.update(response);
         // 수정한 게시글 DB에 저장하기 --> 이 역할을 @Transactional이 해준다...!!!!!
 //        hobbyRepository.save(hobby);
         // 헤더 값과 데이터를 함께 보내는 dto 생성 > 인자가 hobby가 되면 메세지 오류 생김
