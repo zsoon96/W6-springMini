@@ -1,11 +1,14 @@
 package com.hanghae99.miniproject_re.model;
 
+import com.hanghae99.miniproject_re.dto.HobbyRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Hobby extends Timestamped {
@@ -33,6 +36,12 @@ public class Hobby extends Timestamped {
         this.content = content;
     }
 
+    public Hobby(String imageUrl, HobbyRequestDto hobbyRequestDto) {
+        this.imageUrl = imageUrl;
+        this.title = hobbyRequestDto.getTitle();
+        this.nickname = hobbyRequestDto.getNickname();
+        this.content = hobbyRequestDto.getContent();
+    }
 
     public void update(Hobby hobby){
         this.imageUrl = hobby.getImageUrl();
