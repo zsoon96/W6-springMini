@@ -21,7 +21,7 @@ public class HobbyController {
 
     @PostMapping("/hobby")
     public StatusResponseDto createHobby (@RequestPart("multipartFile") MultipartFile multipartFile, // multipartfile 불러올 땐, form data 라는 그룹안에 데이터가 다 담겨져온다.
-                                          @RequestPart HobbyRequestDto hobbyRequestDto) {
+                                                          @RequestPart HobbyRequestDto hobbyRequestDto) {
         return hobbyService.postHobby(multipartFile, hobbyRequestDto);
     }
 

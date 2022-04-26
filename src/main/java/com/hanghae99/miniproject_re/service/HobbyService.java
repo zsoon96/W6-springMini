@@ -3,7 +3,6 @@ package com.hanghae99.miniproject_re.service;
 import com.hanghae99.miniproject_re.dto.HobbyRequestDto;
 import com.hanghae99.miniproject_re.dto.StatusResponseDto;
 import com.hanghae99.miniproject_re.model.Hobby;
-import com.hanghae99.miniproject_re.model.Image;
 import com.hanghae99.miniproject_re.repository.HobbyRepository;
 import com.hanghae99.miniproject_re.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +30,12 @@ public class HobbyService {
 
     // 게시글 작성
     public StatusResponseDto postHobby(MultipartFile multipartFile, HobbyRequestDto hobbyRequestDto) {
-//        String imageName = multipartFile.toString();
-//        String imageName = multipartFile.getOriginalFilename();
-//        String imageName = multipartFile.getOriginalFilename();
-//        System.out.println(imageName);
         String fileName = createFileName(multipartFile.getOriginalFilename());
         String imageUrl = s3Service.uploadFile(multipartFile,fileName);
-//        String imageName = s3Service.createFileName(multipartFile.getOriginalFilename());
         System.out.println(fileName);
 
-        Image image = new Image(fileName, imageUrl);
-        imageRepository.save(image);
+//        Image image = new Image(fileName, imageUrl);
+//        imageRepository.save(image);
 
         Hobby hobby = new Hobby(imageUrl,hobbyRequestDto);
         hobby.setImageUrl(imageUrl);
@@ -71,13 +65,16 @@ public class HobbyService {
         Hobby hobby = hobbyRepository.findById(hobbyId).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 없습니다."));
 
-        Image image = imageRepository.findById(hobby.getId()).orElseThrow(
-                ()-> new IllegalArgumentException("")
-        );
+//        Image image = imageRepository.findById(hobby.getId()).orElseThrow(
+//                ()-> new IllegalArgumentException("")
+//        );
 
-        String currentFilePath = image.getMultipartFile(); // 기존 파일 객체 키
+        // hooby 객체 안의 imgUrl로만 객체 키 파싱
+        String image = hobby.getImageUrl();
+        String [] key = image.split("/");
+        String currentFilePath = key[key.length-1]; // 기존 파일 객체 키
+
         String fileName = createFileName(multipartFile.getOriginalFilename());
-
         String imageUrl = s3Service.upload(multipartFile, currentFilePath, fileName);
         Hobby response = new Hobby(imageUrl,hobbyRequestDto);
         // 게시글에 대한 수정내용 업데이트 해주기
