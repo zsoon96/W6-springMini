@@ -31,11 +31,8 @@ public class HobbyService {
     // 게시글 작성
     public StatusResponseDto postHobby(MultipartFile multipartFile, HobbyRequestDto hobbyRequestDto) {
         String fileName = createFileName(multipartFile.getOriginalFilename());
-        String imageUrl = s3Service.uploadFile(multipartFile,fileName);
+        String imageUrl = s3Service.uploadFile(multipartFile,fileName,"hobby3");
         System.out.println(fileName);
-
-//        Image image = new Image(fileName, imageUrl);
-//        imageRepository.save(image);
 
         Hobby hobby = new Hobby(imageUrl,hobbyRequestDto);
         hobby.setImageUrl(imageUrl);
@@ -59,30 +56,24 @@ public class HobbyService {
     }
 
     // 게시글 수정
-    @Transactional // DB에 반영해주는 아이?
+    @Transactional // DB에 반영
     public StatusResponseDto putHobby(Integer hobbyId, MultipartFile multipartFile, HobbyRequestDto hobbyRequestDto){
         // 요청받은 hobbyId 값으로 게시글 객체 찾기
         Hobby hobby = hobbyRepository.findById(hobbyId).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 없습니다."));
 
-//        Image image = imageRepository.findById(hobby.getId()).orElseThrow(
-//                ()-> new IllegalArgumentException("")
-//        );
-
-        // hooby 객체 안의 imgUrl로만 객체 키 파싱
+        // hooby 객체 안의 imgUrl로만 객체 키 파싱 (폴더 경로까지 포함)
         String image = hobby.getImageUrl();
         String [] key = image.split("/");
-        String currentFilePath = key[key.length-1]; // 기존 파일 객체 키
+        String imageParse = key[key.length-2];
+        String imageParse2 = key[key.length-1];
+        String currentFilePath = imageParse +"/"+ imageParse2; // 기존 파일 객체 키(폴더 경로+UUID)
 
         String fileName = createFileName(multipartFile.getOriginalFilename());
-        String imageUrl = s3Service.upload(multipartFile, currentFilePath, fileName);
+        String imageUrl = s3Service.updateFile(multipartFile, currentFilePath, fileName, "hobby3");
         Hobby response = new Hobby(imageUrl,hobbyRequestDto);
         // 게시글에 대한 수정내용 업데이트 해주기
         hobby.update(response);
-        // 수정한 게시글 DB에 저장하기 --> 이 역할을 @Transactional이 해준다...!!!!!
-//        hobbyRepository.save(hobby);
-        // 헤더 값과 데이터를 함께 보내는 dto 생성 > 인자가 hobby가 되면 메세지 오류 생김
-        // 왠만하면 메소드에서 받는 인자 다 넣어주기 > 받는 인자가 곧 보내는 데이터가 되기때문! = hobbyRequestDto만 넣어도 수정은 문제없긴함..
         StatusResponseDto statusResponseDto = new StatusResponseDto(hobbyId, hobby);
         return statusResponseDto;
     }

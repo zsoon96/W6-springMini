@@ -26,8 +26,10 @@ public class S3Service {
     public String bucket;  // S3 버킷 이름
 
     // 최초 게시글 작성 시 업로드
-    public String uploadFile(MultipartFile file, String fileName){
+    public String uploadFile(MultipartFile file, String fileName, String folderName){
 //        String fileName = createFileName(file.getOriginalFilename());
+        // 폴더 생성
+        fileName = folderName + "/" + fileName;
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(file.getSize());
         objectMetadata.setContentType(file.getContentType());
@@ -44,8 +46,10 @@ public class S3Service {
     }
 
     // 글 수정 시 기존 s3에 있는 이미지 정보 삭제,
-    public String upload(MultipartFile multipartFile,String currentFilePath, String fileName){
+    public String updateFile(MultipartFile multipartFile,String currentFilePath, String fileName, String folderName){
 //        String fileName = createFileName(multipartFile.getOriginalFilename()); // 파일명 랜덤화
+        // 폴더 생성
+        fileName = folderName + "/" + fileName;
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(multipartFile.getSize());
         objectMetadata.setContentType(multipartFile.getContentType());
@@ -71,19 +75,4 @@ public class S3Service {
 
     }
 
-//    public String createFileName(String fileName) {
-//        // 먼저 파일 업로드 시, 파일명을 난수화하기 위해 random으로 돌립니다.
-//        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
-//    }
-
-//    private String getFileExtension(String fileName) {
-//        // file 형식이 잘못된 경우를 확인하기 위해 만들어진 로직이며,
-//        // 파일 타입과 상관없이 업로드할 수 있게 하기 위해 .의 존재 유무만 판단
-//        try {
-//            return fileName.substring(fileName.lastIndexOf("."));
-//        } catch (StringIndexOutOfBoundsException e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일(" + fileName + ") 입니다.");
-//        }
-//
-//    }
 }
